@@ -47,7 +47,7 @@
         <property name="labelFontName" value="宋体"/>
         <property name="annotationFontName" value="宋体"/>
         <!-- id生成器 -->
-        <property name="idGenerator" ref="strongUuidGenerator"/>
+        <!--<property name="idGenerator" ref="strongUuidGenerator"/>-->
     </bean>
 
     <bean id="strongUuidGenerator" class="org.flowable.common.engine.impl.persistence.StrongUuidGenerator"/>

@@ -51,6 +51,7 @@ public class ProcessEngineTest {
         System.out.println(processEngineConfiguration);
         RuntimeService runtimeService = processEngine.getRuntimeService();
         System.out.println(runtimeService);
+        // 任务相关的服务
         TaskService taskService = processEngine.getTaskService();
         System.out.println(taskService);
 
