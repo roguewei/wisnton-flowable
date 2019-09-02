@@ -62,5 +62,7 @@
     <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService"/>
     <bean id="formService" factory-bean="processEngine" factory-method="getFormService"/>
     <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService"/>
+    <bean id="serviceTaskClass" class="com.winston.servicetask.ServiceTaskClass"/>
+    <bean id="okReturningService" class="com.winston.servicetask.OkReturningService"/>
 
 </beans>

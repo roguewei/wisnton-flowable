@@ -175,7 +175,7 @@ public class SpringTest {
      */
     @Test
     public void deleteDeployment(){
-        String deploymentId = "77501";
+        String deploymentId = "160001";
         repositoryService.deleteDeployment(deploymentId);
     }
 

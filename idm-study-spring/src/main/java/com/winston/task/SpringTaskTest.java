@@ -5,6 +5,8 @@ import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.DeploymentBuilder;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.identitylink.api.history.HistoricIdentityLink;
 import org.flowable.task.api.Task;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +14,9 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName SpringProcessTest
@@ -54,9 +58,25 @@ public class SpringTaskTest {
     @Test
     public void deploy(){
         DeploymentBuilder deploymentBuilder = repositoryService.createDeployment()
-                .category("singletask")
-                .name("个人任务测试")
-                .addClasspathResource("singletask.bpmn20.xml");
+                .category("singletask4")
+                .name("个人任务测试4")
+                // singletask2.bpmn20.xml中userTask动态设置userId
+                .addClasspathResource("singletask4.bpmn20.xml");
+        Deployment deploy = deploymentBuilder.deploy();
+        System.out.println(deploy);
+    }
+
+    @Test
+    public void deployGroup(){
+        DeploymentBuilder deploymentBuilder = repositoryService.createDeployment()
+                .category("grouptask4")
+                .name("组任务测试4")
+//                .name("组任务监听器测试3")
+                // singletask2.bpmn20.xml中userTask动态设置userId
+                // singletask3.bpmn20.xml中监听器动态设置userId
+//                .addClasspathResource("grouptask2.bpmn20.xml");
+                .addClasspathResource("grouptask4.bpmn20.xml");
+
         Deployment deploy = deploymentBuilder.deploy();
         System.out.println(deploy);
     }
@@ -64,14 +84,53 @@ public class SpringTaskTest {
     /**
      * @auther: Winston
      * @Description: 根据流程key启动流程实例
+     * singletask.bpmn20.xml中userTask设置固定userId
      * @param:
      * @return:
      * @date: 2019/8/29 9:41
      */
     @Test
     public void startProcessInstanceByKey(){
-//        String processDefinitionKey = "leave";
         String processDefinitionKey = "singletask";
+        ProcessInstance processInstance =
+                runtimeService.startProcessInstanceByKey(processDefinitionKey);
+        System.out.println(processInstance.getId()+"---------"+processInstance.getActivityId());
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 根据流程key启动流程实例
+     * 分配任务方式一（设置固定任务处理人）
+     * singletask2.bpmn20.xml中userTask动态设置userId，所以启动时需要设置，否则爆粗
+     * @param:
+     * @return:
+     * @date: 2019/8/29 9:41
+     */
+    @Test
+    public void startProcessInstanceByKey2(){
+        // 设置userId变量
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("userId", "老高啊");
+
+        String processDefinitionKey = "singletask3";
+        ProcessInstance processInstance =
+                runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
+        System.out.println(processInstance.getId()+"---------"+processInstance.getActivityId());
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 根据流程key启动流程实例
+     * 分配任务方式二（监听器设置任务处理人）
+     * singletask4.bpmn20.xml中userTask设置任务监听器，
+     * 通过监听器设置任务处理人
+     * @param:
+     * @return:
+     * @date: 2019/8/29 9:41
+     */
+    @Test
+    public void startProcessInstanceByKey4(){
+        String processDefinitionKey = "grouptask4";
         ProcessInstance processInstance =
                 runtimeService.startProcessInstanceByKey(processDefinitionKey);
         System.out.println(processInstance.getId()+"---------"+processInstance.getActivityId());
@@ -107,6 +166,23 @@ public class SpringTaskTest {
         String processDefinitionId = "leave:1:87504";
         ProcessInstance processInstance =
                 runtimeService.startProcessInstanceById(processDefinitionId);
+        System.out.println(processInstance.getId()+"---------"+processInstance.getActivityId());
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 启动组流程实例
+     * @param:
+     * @return:
+     * @date: 2019/8/29 9:41
+     */
+    @Test
+    public void startProcessInstanceByGroup(){
+        Map<String, Object> vars = new HashMap<String, Object>();
+        vars.put("userIds", "张三1,李四1,王五1");
+        String processDefinitionKey = "grouptask2";
+        ProcessInstance processInstance =
+                runtimeService.startProcessInstanceByKey(processDefinitionKey, vars);
         System.out.println(processInstance.getId()+"---------"+processInstance.getActivityId());
     }
 
@@ -152,7 +228,7 @@ public class SpringTaskTest {
      */
     @Test
     public void findMyTaskList(){
-        String userId = "张三丰";
+        String userId = "老高";
         List<Task> list = taskService
                 .createTaskQuery()
                 .taskAssignee(userId)
@@ -168,16 +244,146 @@ public class SpringTaskTest {
 
     /**
      * @auther: Winston
-     * @Description: 完成个人任务
+     * @Description: 完成个人任务，若有下一个任务则可以设置任务执行人
      * @param:
      * @return:
      * @date: 2019/8/30 10:45
      */
     @Test
     public void completeTask(){
-        String taskId = "20006";
-        taskService.complete(taskId);
+        // 设置userId变量
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("userId", "老危啊");
+
+        String taskId = "115006";
+        taskService.complete(taskId, variables);
         System.out.println("完成任务");
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 分配任务方式三——任务认领
+     * @param:
+     * @return:
+     * @date: 2019/8/30 11:51
+     */
+    @Test
+    public void setAssigneeTask(){
+        // 任务id
+        String taskId = "65006";
+        // 指定认领的办理人
+        String userId = "wgs";
+        taskService.setAssignee(taskId, userId);
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 查询运行任务处理人，ACT_RU_IDENTITYLINK
+     * @param:
+     * @return:
+     * @date: 2019/8/30 14:27
+     */
+    @Test
+    public void findGroupUser(){
+        String taskId = "87507";
+        List<IdentityLink> identityLinksForTask = taskService.getIdentityLinksForTask(taskId);
+        for(IdentityLink identityLink : identityLinksForTask){
+            System.out.println("getProcessDefinitionId= "+ identityLink.getProcessDefinitionId());
+            System.out.println("getGroupId= "+ identityLink.getGroupId());
+            System.out.println("getUserId="+ identityLink.getUserId());
+            System.out.println("getTaskId="+ identityLink.getTaskId());
+            System.out.println("-----------------");
+        }
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 查询组任务成员历史列表
+     * @param:
+     * @return:
+     * @date: 2019/8/30 14:27
+     */
+    @Test
+    public void findGroupHisUser(){
+        String taskId = "87507";
+        List<HistoricIdentityLink> historicIdentityLinksForTask = historyService.getHistoricIdentityLinksForTask(taskId);
+        for(HistoricIdentityLink historicIdentityLink : historicIdentityLinksForTask){
+            System.out.println("getUserId= "+ historicIdentityLink.getUserId());
+            System.out.println("getTaskId= "+ historicIdentityLink.getTaskId());
+            System.out.println("getProcessInstanceId="+ historicIdentityLink.getProcessInstanceId());
+            System.out.println("---------------");
+        }
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 查询个人任务
+     * @param:
+     * @return:
+     * @date: 2019/8/30 14:27
+     */
+    @Test
+    public void findMyTask(){
+        List<Task> list = taskService
+                .createTaskQuery()
+                .taskAssignee("wangwu")
+                .list();
+        for(Task task : list){
+            System.out.println("id= "+ task.getId());
+            System.out.println("name= "+ task.getName());
+            System.out.println("assinee="+ task.getAssignee());
+        }
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 查询组任务
+     * @param:
+     * @return:
+     * @date: 2019/8/30 14:27
+     */
+    @Test
+    public void findGroupTask(){
+        String userId = "wangwu";
+        List<Task> list = taskService
+                .createTaskQuery()
+                .taskCandidateUser(userId)
+                .list();
+        for(Task task : list){
+            System.out.println("id= "+ task.getId());
+            System.out.println("name= "+ task.getName());
+            System.out.println("assinee="+ task.getAssignee());
+        }
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 拾取、认领任务
+     * @param:
+     * @return:
+     * @date: 2019/8/30 14:53
+     */
+    @Test
+    public void claim(){
+        // 任务Id
+        String taskId = "102506";
+        // 分配办理人
+        String userId = "大哥大";
+        taskService.claim(taskId, userId);
+    }
+
+    /**
+     * @auther: Winston
+     * @Description: 取消拾取、认领任务
+     * @param:
+     * @return:
+     * @date: 2019/8/30 14:53
+     */
+    @Test
+    public void unClaim(){
+        // 任务Id
+        String taskId = "102506";
+        taskService.claim(taskId, null);
     }
 
 }

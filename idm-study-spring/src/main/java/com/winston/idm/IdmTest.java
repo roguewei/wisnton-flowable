@@ -51,9 +51,9 @@ public class IdmTest {
     @Test
     public void testAddUser(){
         UserEntityImpl user = new UserEntityImpl();
-        user.setFirstName("winston");
-        user.setEmail("winston@qq.com");
-        user.setId("winston");
+        user.setFirstName("王五");
+        user.setEmail("wangwu@qq.com");
+        user.setId("wangwu");
         user.setPassword("1");
         user.setRevision(0);
         idmIdentityService.saveUser(user);
@@ -63,10 +63,15 @@ public class IdmTest {
     @Test
     public void testAddGroup(){
         GroupEntityImpl group = new GroupEntityImpl();
-        group.setId("kaifabu");
+        group.setId("bumenjingli");
         group.setRevision(0);
-        group.setName("开发部");
+        group.setName("部门经理");
         idmIdentityService.saveGroup(group);
+    }
+
+    @Test
+    public void deleteGroup(){
+        idmIdentityService.deleteGroup("kaifabu");
     }
 
     // 添加权限
@@ -78,7 +83,7 @@ public class IdmTest {
     // 把用户添加组
     @Test
     public void testUserAddGroup(){
-        idmIdentityService.createMembership("winston", "yunying");
+        idmIdentityService.createMembership("wangwu", "zongjingli");
     }
 
     // 为用户添加权限

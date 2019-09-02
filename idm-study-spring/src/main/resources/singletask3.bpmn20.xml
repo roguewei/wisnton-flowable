@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="singletask3" name="个人任务测试3" isExecutable="true">
+    <documentation>个人任务测试3</documentation>
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <userTask id="sid-33ED0CD2-E217-48DA-BDF0-DAADA69B8AC9" name="审批" flowable:assignee="#{userId}" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-71FCFF0D-D600-4B6A-9655-43D6EEC70F08" sourceRef="startEvent1" targetRef="sid-33ED0CD2-E217-48DA-BDF0-DAADA69B8AC9"></sequenceFlow>
+    <userTask id="sid-9337F92C-F153-4571-8014-F9881EC1B7C5" name="老板审批" flowable:assignee="${userId}" flowable:formFieldValidation="true">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-5357E317-D3AC-45B2-B458-A353A81A19D8" sourceRef="sid-33ED0CD2-E217-48DA-BDF0-DAADA69B8AC9" targetRef="sid-9337F92C-F153-4571-8014-F9881EC1B7C5"></sequenceFlow>
+    <endEvent id="sid-0F173CDC-72DA-45DE-8099-5B5E6DA5C645"></endEvent>
+    <sequenceFlow id="sid-B6C8EE6A-8933-4E8A-B23F-0C503B31CE81" sourceRef="sid-9337F92C-F153-4571-8014-F9881EC1B7C5" targetRef="sid-0F173CDC-72DA-45DE-8099-5B5E6DA5C645"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_singletask">
+    <bpmndi:BPMNPlane bpmnElement="singletask3" id="BPMNPlane_singletask">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-33ED0CD2-E217-48DA-BDF0-DAADA69B8AC9" id="BPMNShape_sid-33ED0CD2-E217-48DA-BDF0-DAADA69B8AC9">
+        <omgdc:Bounds height="80.0" width="100.0" x="165.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-9337F92C-F153-4571-8014-F9881EC1B7C5" id="BPMNShape_sid-9337F92C-F153-4571-8014-F9881EC1B7C5">
+        <omgdc:Bounds height="80.0" width="100.0" x="360.0" y="125.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-0F173CDC-72DA-45DE-8099-5B5E6DA5C645" id="BPMNShape_sid-0F173CDC-72DA-45DE-8099-5B5E6DA5C645">
+        <omgdc:Bounds height="28.0" width="28.0" x="505.0" y="151.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-5357E317-D3AC-45B2-B458-A353A81A19D8" id="BPMNEdge_sid-5357E317-D3AC-45B2-B458-A353A81A19D8">
+        <omgdi:waypoint x="264.9499999999802" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B6C8EE6A-8933-4E8A-B23F-0C503B31CE81" id="BPMNEdge_sid-B6C8EE6A-8933-4E8A-B23F-0C503B31CE81">
+        <omgdi:waypoint x="459.94999999999595" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="505.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-71FCFF0D-D600-4B6A-9655-43D6EEC70F08" id="BPMNEdge_sid-71FCFF0D-D600-4B6A-9655-43D6EEC70F08">
+        <omgdi:waypoint x="119.94999848995758" y="165.0"></omgdi:waypoint>
+        <omgdi:waypoint x="165.0" y="165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
